@@ -34,24 +34,24 @@ int main(int argc, char *argv[])
     if (colonIdx != string::npos)
     {
         size_t startIdx = colonIdx + 1;
-        if (slashIdx != string::npos)
+        if (slashIdx != string::npos) // slash present, read up to the slash
             port = stoi(sub.substr(startIdx, slashIdx - startIdx));
-        else if (colonIdx + 1 != sub.length())
+        else if (colonIdx + 1 != sub.length()) // slash not present, read till EOS
             port = stoi(sub.substr(startIdx));
     }
 
-    string hostname = sub.substr(0, min(colonIdx, slashIdx));
+    string hostname = sub.substr(0, min(colonIdx, slashIdx)); // read till the port number (if present), else till the slash (if present), else till EOS
     string path;
 
     if (slashIdx != string::npos)
-        path = sub.substr(slashIdx);
+        path = sub.substr(slashIdx); // if slash present read starting from the slash
     else
         path = "/";
 
     struct addrinfo hints, *res, *p;
-    hints = {};
-    hints.ai_family = AF_UNSPEC;
-    hints.ai_socktype = SOCK_STREAM;
+    hints = {};                      // set all fields to 0/NULL
+    hints.ai_family = AF_UNSPEC;     // accept both IPv4 and IPv6
+    hints.ai_socktype = SOCK_STREAM; // TCP
 
     if (getaddrinfo(hostname.c_str(), to_string(port).c_str(), &hints, &res) != 0)
     {
@@ -65,7 +65,8 @@ int main(int argc, char *argv[])
     {
         if ((sockfd = socket(p->ai_family, p->ai_socktype, p->ai_protocol)) == -1)
             continue;
-        if (connect(sockfd, p->ai_addr, p->ai_addrlen) == -1)
+        // TCP handshake
+        if (connect(sockfd, p->ai_addr, p->ai_addrlen) == -1) // ai_addr is a pointer to the destination address struct, ai_addrlen is the size of ai_addr
         {
             close(sockfd);
             continue;
@@ -81,7 +82,7 @@ int main(int argc, char *argv[])
 
     freeaddrinfo(res);
 
-    string req = "GET " + path + " HTTP/1.0\r\nHost: " + hostname + "\r\n\r\n";
+    string req = "GET " + path + " HTTP/1.0\r\nHost: " + hostname + "\r\n\r\n"; // \r\n is HTTP standard
 
     send(sockfd, req.c_str(), req.length(), 0);
 
@@ -89,7 +90,7 @@ int main(int argc, char *argv[])
 
     while (true)
     {
-        char buffer[4096];
+        char buffer[4096]; // standard memory page size
         int numBytes = recv(sockfd, buffer, sizeof(buffer), 0);
         if (numBytes <= 0)
             break;
