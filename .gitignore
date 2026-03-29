@@ -1,2 +1,7 @@
 /cloudnet.utm
-/.DS_Store
+.DS_Store
+mp2/src/linkstate
+mp2/src/distvec
+mp2/src/obj/
+mp2/src/output.txt
+*.zip

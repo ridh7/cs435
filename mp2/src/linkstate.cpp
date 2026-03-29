@@ -4,6 +4,7 @@
 #include <fstream>
 #include <sstream>
 #include <set>
+#include <climits>
 using namespace std;
 
 void parseTopology(const char *filename, map<int, map<int, int>> &adj)
