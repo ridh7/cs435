@@ -69,6 +69,8 @@ map<int, pair<int, int>> dijkstra(int src, map<int, map<int, int>> &adj)
         auto [d, u] = *pq.begin();
         pq.erase(pq.begin()); // remove node with smallest cost
 
+        // A node can be inserted into pq multiple times with different costs.
+        // If we already processed a cheaper path to u, this entry is stale — skip it.
         if (d > dist[u])
             continue;
 
@@ -116,6 +118,7 @@ void outputRound(map<int, map<int, int>> &adj, vector<tuple<int, int, string>> &
         allTables[node] = dijkstra(node, adj);
     }
 
+    // print all routing tables (destination nexthope totalcost)
     for (auto &[node, table] : allTables)
     {
         for (auto &[dest, entry] : table)
@@ -126,6 +129,7 @@ void outputRound(map<int, map<int, int>> &adj, vector<tuple<int, int, string>> &
 
     for (auto &[src, dest, msg] : messages)
     {
+        // If dest isn't in src's forwarding table, no path exists (e.g. disconnected graph)
         if (allTables[src].find(dest) == allTables[src].end())
         {
             fout << "from " << src << " to " << dest << " cost infinite hops unreachable message " << msg << "\n";
@@ -133,6 +137,7 @@ void outputRound(map<int, map<int, int>> &adj, vector<tuple<int, int, string>> &
         }
 
         int cost = allTables[src][dest].second;
+        // Trace the path hop by hop
         vector<int> hops;
         int current = src;
         while (current != dest)
