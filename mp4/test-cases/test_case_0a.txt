@@ -1,0 +1,13 @@
+# ---------- server configuration ----------
+# Server: port delay_factor min_api1 max_api1 min_api2 max_api2 limit_api1 limit_api2 api1_active api2_active [incident_type start_t duration_t [extra_delay]]
+
+Server: 8001 1.0 0.2 0.2 0.2 0.2 5 5 1 1
+Server: 8002 1.0 0.2 0.2 0.2 0.2 5 5 1 1
+Server: 8003 1.0 0.2 0.2 0.2 0.2 5 5 1 1
+
+# ---------- client workload (three clients) ----------
+# Client: rps duration api1_ratio stickiness distribution
+
+Client: 5 30 0.5 0 uniform
+Client: 5 30 0.5 0 uniform
+Client: 5 30 0.5 0 uniform
